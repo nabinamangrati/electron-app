@@ -1,2 +1,7 @@
+const func = async () => {
+  const response = await window.versions.ping()
+  console.log(response) // prints out 'pong'
+  console.log('renderer loaded')
+}
 
-  console.log('Renderer loaded');
+func()
