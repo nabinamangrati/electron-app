@@ -7,7 +7,7 @@ const createWindow = () => {
     height: 600,
     // alwaysOnTop: true, //always shows on top of other windows
     // frame:false,   removes the window frame
-    backgroundColor: '#2e2c29',
+    backgroundColor: 'green',
     title: 'My Electron App', //custom title but is overwritten by the index.html title
   // resizable: false,//   makes the window not resizable
     webPreferences: {
