@@ -1,20 +1,42 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
- 
-    <title>Hello from Electron renderer!</title>
-  </head>
-  <body style="user-select: none; -webkit-app-region: drag;">
-    <h1>Hello from Electron renderer!</h1>
-    <p>👋</p>
-    <h1>reload</h1>
-    <a href="child.html" target="_blank">Open Child Window</a>
-    <br><br>
-    <input type="range" style="-webkit-app-region: no-drag;">
-        <p id="info"></p>
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+</head>
+<body>
+    <h1>Hello World!</h1>
+    <p>Current theme source: <strong id="theme-source">System</strong></p>
 
-  </body>
-  <script src="./renderer.js"></script>
+    <button id="toggle-dark-mode">Toggle Dark Mode</button>  <!--this button toggles dark mode-->
+    <button id="reset-to-system">Reset to System Theme</button>  <!--this button resets the theme to system-->
+
+    <script src="renderer.js"></script>
+</body>
 </html>
+
+
+<!-- 
+1. User clicks the "Toggle Dark Mode" button in the UI.
+2. This triggers the event listener attached to the element with ID "toggle-dark-mode" in the renderer (index.html or renderer.js).
+3. Inside the event listener, `window.darkMode.toggle()` is called.
+   - `window` is the global object.
+   - `darkMode` is an object exposed to the renderer by `contextBridge` in `preload.js`.
+   - `toggle()` is a function defined in preload that calls `ipcRenderer.invoke('dark-mode:toggle')`.
+
+4. The `ipcRenderer.invoke('dark-mode:toggle')` sends a message to the main process using the channel name `'dark-mode:toggle'`.
+
+5. In `main.js`, the main process is listening for this channel via `ipcMain.handle('dark-mode:toggle', ...)`.
+   - When it receives the message, it executes the function defined for this handler.
+   - The function checks the current theme using `nativeTheme.shouldUseDarkColors`.
+   - It toggles the theme to the opposite (dark <-> light) by setting `nativeTheme.themeSource` to `'dark'` or `'light'`.
+
+6. After toggling, the main process returns `nativeTheme.shouldUseDarkColors` (true for dark, false for light) back to the renderer.
+
+7. Back in the renderer process, the returned value is stored in `const isDarkMode`.
+
+8. The element with ID `"theme-source"` is updated to show either `"Dark"` or `"Light"` based on the boolean value of `isDarkMode`.
+
+-->

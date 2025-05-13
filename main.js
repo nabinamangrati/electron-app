@@ -1,28 +1,32 @@
-const { app, BrowserWindow,ipcMain } = require('electron/main')
+const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron/main')
 const path = require('node:path')
-console.warn('main process')
-const createWindow = () => {
+
+function createWindow () {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
-    // alwaysOnTop: true, //always shows on top of other windows
-    // frame:false,   //removes the window frame
-    backgroundColor: 'green',
-    title: 'My Electron App', //custom title but is overwritten by the index.html title
-  // resizable: false,//   makes the window not resizable
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
-    
     }
   })
 
   win.loadFile('index.html')
-  win.webContents.openDevTools()
 }
 
-app.whenReady().then(() => {
-    ipcMain.handle('ping', () => 'pong')
+ipcMain.handle('dark-mode:toggle', () => {
+  if (nativeTheme.shouldUseDarkColors) {
+    nativeTheme.themeSource = 'light'
+  } else {
+    nativeTheme.themeSource = 'dark'
+  }
+  return nativeTheme.shouldUseDarkColors
+})
 
+ipcMain.handle('dark-mode:system', () => {
+  nativeTheme.themeSource = 'system'
+})
+
+app.whenReady().then(() => {
   createWindow()
 
   app.on('activate', () => {
